@@ -18,6 +18,8 @@ class WishListItemFactory extends Factory
     {
         return [
             //
+            'user_id' => $this->faker->numberBetween(1, 100),
+            'advertisement_id' => $this->faker->numberBetween(1, 100),
         ];
     }
 }

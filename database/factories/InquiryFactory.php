@@ -18,6 +18,10 @@ class InquiryFactory extends Factory
     {
         return [
             //
+            'user_id' => $this->faker->numberBetween(1, 100),
+            'advertisement_id' => $this->faker->numberBetween(1, 100),
+            'message' => $this->faker->sentence(10),
+            'status' => $this->faker->randomElement(['pending', 'answered']),
         ];
     }
 }

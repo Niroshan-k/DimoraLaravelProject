@@ -18,6 +18,8 @@ class NotificationFactory extends Factory
     {
         return [
             //
+            'content' => $this->faker->sentence(10),
+            'status' => $this->faker->randomElement(['unread']),
         ];
     }
 }

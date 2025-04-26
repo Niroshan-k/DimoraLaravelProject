@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('houses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
+            $table->string('bedroom');
+            $table->string('bathroom');
+            $table->boolean('pool');
+            $table->string('area');
+            $table->boolean('parking');
             $table->timestamps();
         });
     }

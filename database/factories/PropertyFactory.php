@@ -18,6 +18,10 @@ class PropertyFactory extends Factory
     {
         return [
             //
+            'location' => $this->faker->address(),
+            'price' => $this->faker->numberBetween(100000, 10000000),
+            'type' => $this->faker->randomElement(['house', 'apartment', 'land']),
+            'advertisement_id' => $this->faker->numberBetween(1, 100),
         ];
     }
 }

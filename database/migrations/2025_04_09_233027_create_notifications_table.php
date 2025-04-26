@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->text('content'); // The content of the notification
+            $table->string('status')->default('unread'); // Status of the notification, default to 'unread'
+            $table->timestamps(); // created_at and updated_at
         });
     }
 

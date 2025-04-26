@@ -12,6 +12,7 @@ use App\Models\Property;
 use App\Models\Image;
 use App\Models\User;
 use App\Models\Inquiry;
+use App\Models\WishListItem;
 
 
 
@@ -21,9 +22,10 @@ class Advertisement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'property_id',
+        'title',
         'seller_id',
-        'status'
+        'status',
+        'description',
     ];
 
     public function seller()
@@ -38,14 +40,14 @@ class Advertisement extends Model
 
     public function property()
     {
-        return $this->hasOne(Property::class);
+        return $this->hasOne(Property::class, 'advertisement_id', 'id');
     }
 
     public function wishListItem()
     {
-        return $this->hasMany(User::class, 'advertisement_id', 'id');
+        return $this->hasMany(wishListItem::class, 'advertisement_id', 'id');
     }
-    public function name()
+    public function inquiry()
     {
         return $this->hasMany(Inquiry::class, 'advertisement_id', 'id');
     }

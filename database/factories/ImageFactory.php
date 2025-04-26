@@ -18,6 +18,8 @@ class ImageFactory extends Factory
     {
         return [
             //
+            'data' => $this->faker->imageUrl(640, 480, 'property', true),
+            'advertisement_id' => $this->faker->numberBetween(1, 100),
         ];
     }
 }

@@ -2,9 +2,15 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\UserSeeder; // Import the UserSeeder
+use Database\Seeders\AdvertisementSeeder; // Import the AdvertisementSeeder
+use Database\Seeders\PropertySeeder; // Import the PropertySeeder
+use Database\Seeders\HouseSeeder; // Import the HouseSeeder
+use Database\Seeders\ImageSeeder; // Import the ImageSeeder
+use Database\Seeders\InquirySeeder; // Import the InquirySeeder
+use Database\Seeders\NotificationSeeder; // Import the NotificationSeeder
+use Database\Seeders\WishListItemSeeder; // Import the WishListItemSeeder
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +19,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            UserSeeder::class,
+            AdvertisementSeeder::class,
+            PropertySeeder::class,
+            HouseSeeder::class, // Added HouseSeeder
+            ImageSeeder::class, // Added ImageSeeder
+            InquirySeeder::class, // Added InquirySeeder
+            NotificationSeeder::class, // Added NotificationSeeder
+            WishListItemSeeder::class, // Added WishListItemSeeder
         ]);
     }
 }

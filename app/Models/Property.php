@@ -16,9 +16,8 @@ class Property extends Model
     protected $fillable = [
         'location',
         'price',
-        'status',
         'type',
-        'description'  
+        'advertisement_id',  
     ];
 
     public function advertisement()
@@ -28,7 +27,7 @@ class Property extends Model
 
     public function house()
     {
-        return $this->hasOne(House::class);
+        return $this->hasOne(House::class, 'property_id', 'id');
     }
 
     // public function land()

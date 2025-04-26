@@ -18,6 +18,12 @@ class HouseFactory extends Factory
     {
         return [
             //
+            'bedroom' => $this->faker->numberBetween(1, 5),
+            'bathroom' => $this->faker->numberBetween(1, 3),
+            'pool' => $this->faker->boolean(),
+            'area' => $this->faker->numberBetween(50, 500),
+            'parking' => $this->faker->boolean(),
+            'property_id' => $this->faker->numberBetween(1, 100),
         ];
     }
 }

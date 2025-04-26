@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('inquiries', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('advertisement_id')->constrained('advertisements')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('message');
+            $table->enum('status', ['pending', 'responded'])->default('pending');
             $table->timestamps();
         });
     }

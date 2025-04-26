@@ -15,7 +15,7 @@ class Inquiry extends Model
     protected $fillable = [
         'user_id',
         'advertisement_id',
-        'content',
+        'message',
         'status'  
     ];
 

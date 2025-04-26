@@ -16,7 +16,8 @@ class House extends Model
         'bathroom',
         'pool',
         'area',
-        'parking'
+        'parking',
+        'property_id',
     ];
 
     public function property()

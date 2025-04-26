@@ -18,6 +18,10 @@ class AdvertisementFactory extends Factory
     {
         return [
             //
+            'title' => $this->faker->sentence(3),
+            'seller_id' => $this->faker->numberBetween(1, 100),
+            'status' => $this->faker->randomElement(['active', 'inactive']),
+            'description' => $this->faker->paragraph(3),
         ];
     }
 }
