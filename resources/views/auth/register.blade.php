@@ -21,7 +21,7 @@
 
             <div class="mt-4">
                 <x-label for="user_role" value="{{ __('Role') }}" />
-                <select id="user_role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" name="user_role" required>
+                <select id="user_role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" name="user_role" required>
                     <option value="buyer" {{ old('user_role') == 'buyer' ? 'selected' : '' }}>Buyer</option>
                     <option value="seller" {{ old('user_role') == 'seller' ? 'selected' : '' }}>Seller</option>
                 </select>

@@ -8,6 +8,7 @@ use App\Http\Resources\AdvertisementResource;
 use App\Models\Property;
 use App\Models\House;
 use App\Models\Image;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\DB;
 
@@ -18,17 +19,13 @@ class AdvertisementController extends Controller
      */
     public function index()
     {
-        // Get paginated advertisements with their properties and houses
-        $advertisements = Advertisement::with('property.house')->paginate(10);
+        // Get paginated advertisements with their properties, houses, and images
+        $advertisements = Advertisement::with('property.house', 'images')->paginate(10);
 
-        // Get advertisements with their images
-        $images = Advertisement::with('images')->get();
+        //Log::info('Advertisements:', $advertisements->toArray());
 
-        // Return the paginated advertisements and the images separately
-        return response()->json([
-            'advertisements' => AdvertisementResource::collection($advertisements),
-            'images' => AdvertisementResource::collection($images),
-        ]);
+        // Return the view with the advertisements
+        return view('index', compact('advertisements'));
     }
 
     /**
