@@ -51,3 +51,4 @@ use App\Http\Controllers\AdvertisementController;
 
 Route::get('/index', [AdvertisementController::class, 'index'])->name('advertisements.index');
 Route::get('/advertisement/{id}', [AdvertisementController::class, 'show'])->name('advertisement.show');
+Route::get('/', [AdvertisementController::class, 'index'])->name('advertisements.index');

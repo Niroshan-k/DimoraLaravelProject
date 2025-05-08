@@ -19,13 +19,25 @@ class AdvertisementController extends Controller
      */
     public function index()
     {
-        // Get paginated advertisements with their properties, houses, and images
-        $advertisements = Advertisement::with('property.house', 'images')->paginate(10);
+        $query = Advertisement::with(['property.house', 'images']);
 
-        //Log::info('Advertisements:', $advertisements->toArray());
+        $advertisementsLatest = (clone $query)
+            ->orderBy('created_at', 'desc')
+            ->paginate(4, ['*'], 'latest_page');
 
-        // Return the view with the advertisements
-        return view('index', compact('advertisements'));
+        $advertisementsLuxury = (clone $query)
+            ->whereHas('property.house', function ($query) {
+                $query->where('house_type', 'luxury');
+            })
+            ->paginate(8, ['*'], 'luxury_page');
+
+        $advertisementsModern = (clone $query)
+            ->whereHas('property.house', function ($query) {
+                $query->where('house_type', 'modern');
+            })
+            ->paginate(8, ['*'], 'modern_page');
+
+        return view('index', compact('advertisementsLatest', 'advertisementsLuxury', 'advertisementsModern'));
     }
 
     /**

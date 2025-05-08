@@ -24,6 +24,7 @@ class HouseFactory extends Factory
             'area' => $this->faker->numberBetween(50, 500),
             'parking' => $this->faker->boolean(),
             'property_id' => $this->faker->numberBetween(1, 100),
+            'house_type' => $this->faker->randomElement(['luxury', 'modern', 'traditional']),
         ];
     }
 }

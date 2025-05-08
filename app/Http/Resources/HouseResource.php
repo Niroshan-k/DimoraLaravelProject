@@ -23,6 +23,7 @@ class HouseResource extends JsonResource
             'area' => $this->area,
             //'year_built' => $this->year_built,
             'property_id' => $this->property_id,
+            'house_type' => $this->house_type,
         ];
     }
 }

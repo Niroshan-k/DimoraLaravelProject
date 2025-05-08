@@ -14,7 +14,7 @@
       <h6 class="text-white text-[100px]">Perfect Home</h6>
       <div>
         <button class="border-4 text-white border-white hover:text-black hover:bg-white py-3 px-5 font-bold mt-5">
-          Find Your Home
+          Get Started
         </button>
       </div>
     </div>
@@ -46,17 +46,17 @@
   
 </header>
  <body>
- <div class="container mx-auto px-4 py-8">
-        <h6 class="text-4xl mt-10 mb-8">Advertisements</h6>
-
+ <div class="container mx-auto py-8">
+ <!-- <pre>{{ print_r($advertisementsModern->toArray(), true) }}</pre> -->
+        <h6 class="text-4xl mt-10 mb-8">Latest</h6>
         <!-- Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach ($advertisements as $advertisement)
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach ($advertisementsLatest as $advertisement)
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <!-- Advertisement Image -->
                     @if (!empty($advertisement['images']) && count($advertisement['images']) > 0)
                         <img 
-                            src="{{ Storage::url($advertisement['images'][0]['path']) }}" 
+                            src="{{ asset('storage/appImages/1.jpg') }}" 
                             alt="Advertisement Image" 
                             class="w-full h-48 object-cover">
                     @else
@@ -68,17 +68,16 @@
 
                     <!-- Advertisement Details -->
                     <div class="p-4">
-                        <h6 class="text-xl">{{ $advertisement['title'] }}</h6>
+                        <h1 class="text-xl uppercase font-bold">{{ $advertisement['title'] }}</h1>
                         <!-- <p class="text-gray-600 text-sm mt-2">
                             {{ $advertisement['description'] }}
                         </p> -->
-                        <!-- <pre>{{ print_r($advertisements->toArray(), true) }}</pre> -->
+                        
 
                         <!-- Property and House Details -->
                         @if (!empty($advertisement['property']))
                             <div class="mt-4">
-                                <p class="text-gray-700 text-sm"><strong>Property Location:</strong> {{ $advertisement['property']['location'] }}</p>
-                                <p class="text-gray-700 text-sm"><strong>Property Type:</strong> {{ $advertisement['property']['type'] }}</p>
+                                <p class="text-gray-700 text-sm"><strong>Location:</strong> {{ $advertisement['property']['location'] }}</p>
                                 <p class="text-gray-700 text-sm"><strong>Price:</strong> ${{ number_format($advertisement['property']['price'], 2) }}</p>
 
                                 @if (!empty($advertisement['property']['house']))
@@ -87,6 +86,7 @@
                                         <p class="text-gray-700 text-sm"><strong>Bathrooms:</strong> {{ $advertisement['property']['house']['bathroom'] }}</p>
                                         <p class="text-gray-700 text-sm"><strong>Parking:</strong> {{ $advertisement['property']['house']['parking'] ? 'Yes' : 'No' }}</p>
                                         <p class="text-gray-700 text-sm"><strong>Pool:</strong> {{ $advertisement['property']['house']['pool'] ? 'Yes' : 'No' }}</p> -->
+                                        <p class="text-gray-700 text-sm"><strong>Type:</strong> {{ $advertisement['property']['house']['house_type'] }}</p>
                                         <p class="text-gray-700 text-sm"><strong>Area:</strong> {{ $advertisement['property']['house']['area'] }} sq ft</p>
                                     </div>
                                 @endif
@@ -97,7 +97,7 @@
 
                         <!-- Call to Action -->
                         <div class="mt-4">
-                            <a href="{{ route('advertisement.show', $advertisement['id']) }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                            <a href="{{ route('advertisement.show', $advertisement['id']) }}" class="bg-[#523D35] text-white py-2 px-4 rounded hover:bg-[#886658]">
                                 View Details
                             </a>
                         </div>
@@ -106,10 +106,189 @@
             @endforeach
         </div>
 
-        <!-- Pagination -->
-        <div class="mt-8">
-            {{ $advertisements->links() }}
+        <h6 class="text-4xl mt-20 mb-8">Recommend</h6>
+
+        <h6 class="text-4xl mt-20 mb-8">Luxury Houses</h6>
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach ($advertisementsLuxury as $advertisement)
+                <div class="bg-white rounded shadow-md hover:shadow-lg overflow-hidden">
+                    <!-- Advertisement Image -->
+                    @if (!empty($advertisement['images']) && count($advertisement['images']) > 0)
+                        <img 
+                            src="{{ asset('storage/appImages/1.jpg') }}" 
+                            alt="Advertisement Image" 
+                            class="w-full h-48 object-cover">
+                    @else
+                        <img 
+                            src="{{ asset('storage/appImages/1.jpg') }}" 
+                            alt="Default Image" 
+                            class="w-full h-48 object-cover">
+                    @endif
+
+                    <!-- Advertisement Details -->
+                    <div class="p-4">
+                        <h1 class="text-xl uppercase font-bold">{{ $advertisement['title'] }}</h1>
+                        <!-- <p class="text-gray-600 text-sm mt-2">
+                            {{ $advertisement['description'] }}
+                        </p> -->
+
+                        <!-- <pre>{{ print_r($advertisementsLuxury->toArray(), true) }}</pre> -->
+                        
+
+                        <!-- Property and House Details -->
+                        @if (!empty($advertisement['property']))
+                            <div class="mt-4">
+                                <p class="text-gray-700 text-sm w-max truncate"><strong>Location:</strong> {{ $advertisement['property']['location'] }}</p>
+                                <p class="text-gray-700 text-sm"><strong>Price:</strong> ${{ number_format($advertisement['property']['price'], 2) }}</p>
+
+                                @if (!empty($advertisement['property']['house']))
+                                    <div class="mt-4">
+                                        <!-- <p class="text-gray-700 text-sm"><strong>Bedrooms:</strong> {{ $advertisement['property']['house']['bedroom'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Bathrooms:</strong> {{ $advertisement['property']['house']['bathroom'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Parking:</strong> {{ $advertisement['property']['house']['parking'] ? 'Yes' : 'No' }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Pool:</strong> {{ $advertisement['property']['house']['pool'] ? 'Yes' : 'No' }}</p> -->
+                                        <p class="text-gray-700 text-sm"><strong>Type:</strong> {{ $advertisement['property']['house']['house_type'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Area:</strong> {{ $advertisement['property']['house']['area'] }} sq ft</p>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <p>No property details available.</p>
+                        @endif
+
+                        <!-- Call to Action -->
+                        <div class="mt-4">
+                            <a href="{{ route('advertisement.show', $advertisement['id']) }}" class="bg-[#523D35] text-white py-2 px-4 rounded hover:bg-[#886658]">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
+
+        <h6 class="text-4xl mt-20 mb-8">Modern Houses</h6>
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach ($advertisementsModern as $advertisement)
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <!-- Advertisement Image -->
+                    @if (!empty($advertisement['images']) && count($advertisement['images']) > 0)
+                        <img 
+                            src="{{ asset('storage/appImages/1.jpg') }}" 
+                            alt="Advertisement Image" 
+                            class="w-full h-48 object-cover">
+                    @else
+                        <img 
+                            src="{{ asset('storage/appImages/1.jpg') }}" 
+                            alt="Default Image" 
+                            class="w-full h-48 object-cover">
+                    @endif
+
+                    <!-- Advertisement Details -->
+                    <div class="p-4">
+                        <h1 class="text-xl uppercase font-bold">{{ $advertisement['title'] }}</h1>
+                        <!-- <p class="text-gray-600 text-sm mt-2">
+                            {{ $advertisement['description'] }}
+                        </p> -->
+                        
+
+                        <!-- Property and House Details -->
+                        @if (!empty($advertisement['property']))
+                            <div class="mt-4">
+                                <p class="text-gray-700 text-sm"><strong>Location:</strong> {{ $advertisement['property']['location'] }}</p>
+                                <p class="text-gray-700 text-sm"><strong>Price:</strong> ${{ number_format($advertisement['property']['price'], 2) }}</p>
+
+                                @if (!empty($advertisement['property']['house']))
+                                    <div class="mt-4">
+                                        <!-- <p class="text-gray-700 text-sm"><strong>Bedrooms:</strong> {{ $advertisement['property']['house']['bedroom'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Bathrooms:</strong> {{ $advertisement['property']['house']['bathroom'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Parking:</strong> {{ $advertisement['property']['house']['parking'] ? 'Yes' : 'No' }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Pool:</strong> {{ $advertisement['property']['house']['pool'] ? 'Yes' : 'No' }}</p> -->
+                                        <p class="text-gray-700 text-sm"><strong>Type:</strong> {{ $advertisement['property']['house']['house_type'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Area:</strong> {{ $advertisement['property']['house']['area'] }} sq ft</p>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <p>No property details available.</p>
+                        @endif
+
+                        <!-- Call to Action -->
+                        <div class="mt-4">
+                            <a href="{{ route('advertisement.show', $advertisement['id']) }}" class="bg-[#523D35] text-white py-2 px-4 rounded hover:bg-[#886658]">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+
+        <h6 class="text-4xl mt-20 mb-8">Traditional Houses</h6>
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach ($advertisementsModern as $advertisement)
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <!-- Advertisement Image -->
+                    @if (!empty($advertisement['images']) && count($advertisement['images']) > 0)
+                        <img 
+                            src="{{ asset('storage/appImages/1.jpg') }}" 
+                            alt="Advertisement Image" 
+                            class="w-full h-48 object-cover">
+                    @else
+                        <img 
+                            src="{{ asset('storage/appImages/1.jpg') }}" 
+                            alt="Default Image" 
+                            class="w-full h-48 object-cover">
+                    @endif
+
+                    <!-- Advertisement Details -->
+                    <div class="p-4">
+                        <h1 class="text-xl uppercase font-bold">{{ $advertisement['title'] }}</h1>
+                        <!-- <p class="text-gray-600 text-sm mt-2">
+                            {{ $advertisement['description'] }}
+                        </p> -->
+                        
+
+                        <!-- Property and House Details -->
+                        @if (!empty($advertisement['property']))
+                            <div class="mt-4">
+                                <p class="text-gray-700 text-sm"><strong>Location:</strong> {{ $advertisement['property']['location'] }}</p>
+                                <p class="text-gray-700 text-sm"><strong>Price:</strong> ${{ number_format($advertisement['property']['price'], 2) }}</p>
+
+                                @if (!empty($advertisement['property']['house']))
+                                    <div class="mt-4">
+                                        <!-- <p class="text-gray-700 text-sm"><strong>Bedrooms:</strong> {{ $advertisement['property']['house']['bedroom'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Bathrooms:</strong> {{ $advertisement['property']['house']['bathroom'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Parking:</strong> {{ $advertisement['property']['house']['parking'] ? 'Yes' : 'No' }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Pool:</strong> {{ $advertisement['property']['house']['pool'] ? 'Yes' : 'No' }}</p> -->
+                                        <p class="text-gray-700 text-sm"><strong>Type:</strong> {{ $advertisement['property']['house']['house_type'] }}</p>
+                                        <p class="text-gray-700 text-sm"><strong>Area:</strong> {{ $advertisement['property']['house']['area'] }} sq ft</p>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <p>No property details available.</p>
+                        @endif
+
+                        <!-- Call to Action -->
+                        <div class="mt-4">
+                            <a href="{{ route('advertisement.show', $advertisement['id']) }}" class="bg-[#523D35] text-white py-2 px-4 rounded hover:bg-[#886658]">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Pagination
+        <div class="mt-8">
+            {{ $advertisementsLuxury->links() }}
+        </div> -->
     </div>
  </body>
  

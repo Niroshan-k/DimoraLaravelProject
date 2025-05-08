@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('user_role')->default('seller', 'buyer');
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->string('location')->nullable();
             $table->timestamps();
         });
 

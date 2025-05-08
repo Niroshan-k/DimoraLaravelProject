@@ -1,4 +1,6 @@
 @import url('https://fonts.cdnfonts.com/css/dm-serif-display');
+@import url('https://fonts.cdnfonts.com/css/reverie');
+
 
 #home {
  background-image: url('/public/storage/appImages/landing.jpg');
@@ -9,5 +11,5 @@
 }
 
 h6{
- font-family: 'DM Serif Display', sans-serif;                                            
+ font-family: 'REVERIE', sans-serif;                                            
 }

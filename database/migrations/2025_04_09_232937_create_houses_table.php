@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('pool');
             $table->string('area');
             $table->boolean('parking');
+            $table->string('house_type');
             $table->timestamps();
         });
     }

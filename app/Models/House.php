@@ -18,6 +18,7 @@ class House extends Model
         'area',
         'parking',
         'property_id',
+        'house_type',
     ];
 
     public function property()
