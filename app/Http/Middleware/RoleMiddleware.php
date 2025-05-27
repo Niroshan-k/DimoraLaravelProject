@@ -22,6 +22,6 @@ class RoleMiddleware
             return $next($request);
         }
 
-        return redirect('/index')->with('error', 'Access denied!');
+        return redirect('/index')->with('error', 'Access denied! Only sellers can access the dashboard.');
     }
 }

@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware as RoleMiddleware;
-
-// Home route
-Route::get('/', function () {
-    return view('index');
-});
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AdvertisementController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\HouseController;
+use App\Http\Controllers\ImageController;
+use App\Models\MongoInfo;
 
 // Test route for property advertisement
 Route::get('test', function () {
@@ -38,17 +40,29 @@ Route::middleware([
 ])->group(function () {
     // Dashboard route for sellers only
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $user = Auth::user();
+        $advertisements = $user
+            ? $user->advertisements()->with('images')->get()
+            : collect(); // empty collection if not logged in
+
+        return view('dashboard', compact('advertisements'));
     })->name('dashboard')->middleware(['auth', RoleMiddleware::class . ':seller']);
     
-    // Index route
-    Route::get('/index', function () {
-        return view('index');
-    })->name('index')->middleware(['auth']);
+    Route::get('/create', [AdvertisementController::class, 'create'])
+        ->name('advertisement.create')
+        ->middleware(['auth', RoleMiddleware::class . ':seller']);
+    
+    Route::get('/advertisement/{id}/edit', [AdvertisementController::class, 'edit'])
+        ->name('advertisement.edit')
+        ->middleware(['auth', RoleMiddleware::class . ':seller']);
 });
 
-use App\Http\Controllers\AdvertisementController;
-
-Route::get('/index', [AdvertisementController::class, 'index'])->name('advertisements.index');
+// Public routes
+Route::get('/index', [AdvertisementController::class, 'index'])->name('index');
 Route::get('/advertisement/{id}', [AdvertisementController::class, 'show'])->name('advertisement.show');
 Route::get('/', [AdvertisementController::class, 'index'])->name('advertisements.index');
+Route::resource('advertisements', AdvertisementController::class);
+Route::get('/notifications', [\App\Http\Controllers\AdvertisementController::class, 'notifications'])
+    ->middleware(['auth']);
+Route::get('/search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search');
+

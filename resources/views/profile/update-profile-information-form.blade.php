@@ -1,4 +1,4 @@
-<x-form-section submit="updateProfileInformation">
+<x-form-section submit="updateProfileInformation" class="mt-20">
     <x-slot name="title">
         {{ __('Profile Information') }}
     </x-slot>
@@ -80,6 +80,14 @@
                     </p>
                 @endif
             @endif
+        </div>
+
+        <!-- role -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="role" value="{{ __('Role') }}" />
+            <div class="mt-1 block w-full bg-white border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm px-3 py-2">
+                {{ $this->user->user_role }}
+            </div>
         </div>
     </x-slot>
 

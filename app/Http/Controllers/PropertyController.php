@@ -24,6 +24,21 @@ class PropertyController extends Controller
     public function store(Request $request)
     {
         //
+        $validated = $request->validate([
+            'advertisement_id' => 'required|exists:advertisements,id',
+            'location' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'type' => 'required|string',
+        ]);
+
+        $property = Property::create($validated);
+
+        return response()->json([
+            'message' => 'Property created.',
+            'property_id' => $property->id,
+            'property' => $property,
+        ], 201);
+        
     }
 
     /**

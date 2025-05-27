@@ -23,7 +23,23 @@ class HouseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'property_id' => 'required|exists:properties,id',
+            'bedroom' => 'required|integer|min:0',
+            'bathroom' => 'required|integer|min:0',
+            'pool' => 'required|boolean',
+            'area' => 'required|numeric',
+            'parking' => 'required|boolean',
+            'house_type' => 'required|in:modern,traditional,luxury', // <-- add this line
+        ]);
+
+        $house = House::create($validated);
+
+        return response()->json([
+            'message' => 'House created.',
+            'house_id' => $house->id,
+            'house' => $house,
+        ], 201);
     }
 
     /**

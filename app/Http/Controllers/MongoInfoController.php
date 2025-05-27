@@ -2,24 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Http\Resources\UserResource;
-use App\Http\Resources\AdvertisementResource;
+use App\Models\MongoInfo;
 
-class UserController extends Controller
+class MongoInfoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $user = User::with('advertisements.property.house', 'advertisements.images')->findOrFail($id);
-
-        // Get the user's advertisements (with property, house, and images eager loaded)
-        $advertisements = $user->advertisements;
-
-        return AdvertisementResource::collection($advertisements);
+        try {
+            $users = MongoInfo::all();
+            return view('mongo', compact('users'));
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
     }
 
     /**
@@ -36,8 +35,6 @@ class UserController extends Controller
     public function show(string $id)
     {
         //
-        $user = User::with('advertisements.property.house')->findOrFail($id);
-        return new UserResource($user);
     }
 
     /**

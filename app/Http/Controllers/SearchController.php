@@ -3,23 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Http\Resources\UserResource;
-use App\Http\Resources\AdvertisementResource;
 
-class UserController extends Controller
+class SearchController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user = User::with('advertisements.property.house', 'advertisements.images')->findOrFail($id);
+        $query = $request->input('q');
 
-        // Get the user's advertisements (with property, house, and images eager loaded)
-        $advertisements = $user->advertisements;
+        $results = \App\Models\Advertisement::where(function($q1) use ($query) {
+            $q1->where('title', 'like', "%{$query}%")
+                ->orWhereHas('property', function($q2) use ($query) {
+                    $q2->where('location', 'like', "%{$query}%");
+                });
+        })->get();
 
-        return AdvertisementResource::collection($advertisements);
+        return view('search.results', compact('results', 'query'));
     }
 
     /**
@@ -36,8 +37,6 @@ class UserController extends Controller
     public function show(string $id)
     {
         //
-        $user = User::with('advertisements.property.house')->findOrFail($id);
-        return new UserResource($user);
     }
 
     /**

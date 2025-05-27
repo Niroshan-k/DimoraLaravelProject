@@ -23,18 +23,16 @@ class AuthenticatedSessionController extends Controller
      * Handle the login request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request)
     {
-        // Validate the login credentials
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Attempt to authenticate the user
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
@@ -43,8 +41,23 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Redirect based on role after successful login
-        return $this->authenticated($request, Auth::user());
+        // Create API token (if you want)
+        $user = Auth::user();
+        $token = $user->createToken('web-login')->plainTextToken;
+        
+        // Save token in session
+        $request->session()->put('api_token', $token);
+
+        // Example: return token in JSON if API request
+        if ($request->wantsJson()) {
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+            ]);
+        }
+
+        // Otherwise, redirect as usual
+        return $this->authenticated($request, $user);
     }
 
     /**

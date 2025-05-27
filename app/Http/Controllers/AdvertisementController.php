@@ -9,6 +9,7 @@ use App\Models\Property;
 use App\Models\House;
 use App\Models\Image;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\DB;
 
@@ -23,7 +24,7 @@ class AdvertisementController extends Controller
 
         $advertisementsLatest = (clone $query)
             ->orderBy('created_at', 'desc')
-            ->paginate(4, ['*'], 'latest_page');
+            ->paginate(8, ['*'], 'latest_page');
 
         $advertisementsLuxury = (clone $query)
             ->whereHas('property.house', function ($query) {
@@ -37,7 +38,14 @@ class AdvertisementController extends Controller
             })
             ->paginate(8, ['*'], 'modern_page');
 
-        return view('index', compact('advertisementsLatest', 'advertisementsLuxury', 'advertisementsModern'));
+        $advertisementsTraditional = (clone $query)
+            ->whereHas('property.house', function ($query) {
+                $query->where('house_type', 'traditional');
+            })
+            ->paginate(8, ['*'], 'traditional_page');
+        
+        return view('/index', compact('advertisementsLatest', 'advertisementsLuxury', 'advertisementsModern', 'advertisementsTraditional'));
+        
     }
 
     /**
@@ -45,91 +53,58 @@ class AdvertisementController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the incoming request data
-        $validatedData = $request->validate([
-            // Advertisement fields
-            'title' => 'required|string|max:255',
-            'seller_id' => 'required|exists:users,id', // Ensure the seller exists
-            'status' => 'required|string',
-            'description' => 'nullable|string',
-
-            // Property fields
-            'location' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'type' => 'required|string', // e.g., 'house', 'apartment', etc.
-
-            // House fields
-            'bedroom' => 'required|integer|min:0',
-            'bathroom' => 'required|integer|min:0',
-            'pool' => 'required|boolean',
-            'area' => 'required|numeric',
-            'parking' => 'required|boolean',
-
-            // Images
-            'images' => 'required|array|size:4', // Ensure exactly 4 images are uploaded
-            'images.*' => 'required|file|mimes:jpg,jpeg,png|max:2048', // Each image must be a file of type jpg, jpeg, or png, max size 2MB
-        ]);
-
-        // Start a database transaction
-        DB::beginTransaction();
-
         try {
-            // Step 1: Create the Advertisement
-            $advertisement = Advertisement::create([
-                'title' => $validatedData['title'],
-                'seller_id' => $validatedData['seller_id'],
-                'status' => $validatedData['status'],
-                'description' => $validatedData['description'] ?? null,
-            ]);
+            if ($request->expectsJson() || $request->ajax()) {
+                // Custom validation for AJAX/JSON requests
+                $validator = \Validator::make($request->all(), [
+                    'title' => 'required|string|max:255',
+                    'status' => 'required|string',
+                    'description' => 'nullable|string',
+                ]);
 
-            // Step 2: Create the Property associated with the Advertisement
-            $property = Property::create([
-                'location' => $validatedData['location'],
-                'price' => $validatedData['price'],
-                'type' => $validatedData['type'],
-                'advertisement_id' => $advertisement->id, // Link the property to the advertisement
-            ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors' => $validator->errors()], 422);
+                }
 
-            // Step 3: Create the House associated with the Property
-            House::create([
-                'bedroom' => $validatedData['bedroom'],
-                'bathroom' => $validatedData['bathroom'],
-                'pool' => $validatedData['pool'],
-                'area' => $validatedData['area'],
-                'parking' => $validatedData['parking'],
-                'property_id' => $property->id, // Link the house to the property
-            ]);
-
-            // Step 4: Save the Images Locally and Store Paths in the Database
-            foreach ($validatedData['images'] as $image) {
-                // Store the image in the 'public/images' directory
-                $filePath = $image->store('images', 'public'); // Saves to 'storage/app/public/images'
-
-                // Save the file path in the database
-                Image::create([
-                    'data' => $filePath, // Store the file path instead of Base64 or binary data
-                    'advertisement_id' => $advertisement->id, // Link the image to the advertisement
+                $validated = $validator->validated();
+            } else {
+                $validated = $request->validate([
+                    'title' => 'required|string|max:255',
+                    'status' => 'required|string',
+                    'description' => 'nullable|string',
                 ]);
             }
 
-            // Commit the transaction
-            DB::commit();
+            $advertisement = Advertisement::create([
+                ...$validated,
+                'seller_id' => auth()->id(),
+            ]);
 
-            // Return a success response
+            // --- Create notification in MongoDB ---
+            $seller = auth()->user();
+            try {
+                DB::connection('mongodb')
+                    ->selectCollection('notifications')
+                    ->insertOne([
+                        'advertisement_id' => $advertisement->id,
+                        'seller_id' => $seller->id,
+                        'seller_name' => $seller->name,
+                        'message' => "New advertisement '{$advertisement->title}' created by {$seller->name}.",
+                        'created_at' => now()->toDateTimeString(),
+                    ]);
+            } catch (\Exception $e) {
+                \Log::error('MongoDB notification insert failed: ' . $e->getMessage());
+            }
+            // --- End notification creation ---
+
             return response()->json([
-                'message' => 'Advertisement, Property, House, and Images created successfully.',
+                'message' => 'Advertisement created.',
+                'advertisement_id' => $advertisement->id,
                 'advertisement' => $advertisement,
-                'property' => $property,
             ], 201);
-
         } catch (\Exception $e) {
-            // Rollback the transaction in case of an error
-            DB::rollBack();
-
-            return response()->json([
-                'message' => 'Failed to create Advertisement, Property, House, and Images.',
-                'error' => $e->getMessage(),
-            ], 500);
+            \Log::error($e);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -140,11 +115,7 @@ class AdvertisementController extends Controller
     {
         // Retrieve the advertisement by ID, including related property, house, and images
         $advertisement = Advertisement::with(['property.house', 'images'])->findOrFail($id);
-
-        // Return the advertisement details
-        return response()->json([
-            'advertisement' => new AdvertisementResource($advertisement),
-        ]);
+        return view('master', compact('advertisement'));
     }
 
     /**
@@ -219,18 +190,18 @@ class AdvertisementController extends Controller
 
             // Step 7: Handle Image Updates
             if (isset($validatedData['images'])) {
-                // Delete existing images if new ones are provided
-                $advertisement->images()->delete();
+                // Count current images
+                $currentCount = $advertisement->images()->count();
+                $maxImages = 4;
+                $canAdd = $maxImages - $currentCount;
 
-                // Save the new images
-                foreach ($validatedData['images'] as $image) {
-                    // Store the image in the 'public/images' directory
-                    $filePath = $image->store('images', 'public'); // Saves to 'storage/app/public/images'
+                $imagesToAdd = array_slice($validatedData['images'], 0, $canAdd);
 
-                    // Save the file path in the database
+                foreach ($imagesToAdd as $image) {
+                    $filePath = $image->store('images', 'public');
                     Image::create([
-                        'data' => $filePath, // Store the file path instead of Base64 or binary data
-                        'advertisement_id' => $advertisement->id, // Link the image to the advertisement
+                        'data' => $filePath,
+                        'advertisement_id' => $advertisement->id,
                     ]);
                 }
             }
@@ -238,13 +209,17 @@ class AdvertisementController extends Controller
             // Commit the transaction
             DB::commit();
 
-            // Return a success response
-            return response()->json([
-                'message' => 'Advertisement, Property, House, and Images updated successfully.',
-                'advertisement' => $advertisement,
-                'property' => $property,
-                'house' => $house ?? null,
-            ], 200);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'message' => 'Advertisement, Property, House, and Images updated successfully.',
+                    'advertisement' => $advertisement,
+                    'property' => $property,
+                    'house' => $house ?? null,
+                ], 200);
+            }
+
+            // For normal form submissions, redirect to dashboard
+            return redirect()->route('dashboard')->with('success', 'Advertisement updated successfully.');
 
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // Rollback the transaction if the Advertisement is not found
@@ -269,7 +244,47 @@ class AdvertisementController extends Controller
      */
     public function destroy(string $id)
     {
-        //
-        return response()->json(['message' => 'not implemented yet.'], 200);
+        $advertisement = Advertisement::with('images')->findOrFail($id);
+
+        // Delete image files from storage
+        foreach ($advertisement->images as $image) {
+            if (\Storage::disk('public')->exists($image->data)) {
+                \Storage::disk('public')->delete($image->data);
+            }
+        }
+
+        // This will delete the advertisement and, if set up, all related records
+        $advertisement->delete();
+
+        return response()->json(['message' => 'Advertisement and related data deleted.'], 200);
+    }
+
+    public function create()
+    {
+        return view('advertisements.create');
+    }
+
+    public function edit(string $id)
+    {
+        $advertisement = Advertisement::with(['property.house', 'images'])->findOrFail($id);
+        return view('advertisements.edit', compact('advertisement'));
+    }
+
+    public function notifications()
+    {
+        $user = auth()->user();
+
+        // Fetch notifications for the current user (seller)
+        $cursor = \Illuminate\Support\Facades\DB::connection('mongodb')
+            ->selectCollection('notifications')
+            ->find(['seller_id' => $user->id]);
+
+        $notifications = [];
+        foreach ($cursor as $doc) {
+            $notifications[] = json_decode(json_encode($doc), true);
+        }
+
+        // Pass notifications to the view
+        return view('advertisements.notification', compact('notifications'));
     }
 }
