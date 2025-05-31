@@ -75,4 +75,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Advertisement::class, 'seller_id');
     }
+
+    /**
+     * Get the inquiries for the user.
+     */
+    public function inquiries()
+    {
+        return $this->hasMany(\App\Models\Inquiry::class, 'user_id', 'id');
+    }
 }

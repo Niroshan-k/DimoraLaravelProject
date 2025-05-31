@@ -21,7 +21,7 @@
             x-init="start()"
             x-on:mouseenter="stop()"
             x-on:mouseleave="start()"
-            class="relative w-full h-[800px] mb-8 rounded-b overflow-hidden shadow"
+            class="relative h-[400px] md:w-full md:h-[800px] mb-8 rounded-b overflow-hidden shadow"
         >
             <template x-for="(img, idx) in images" :key="idx">
                 <img 
@@ -49,7 +49,7 @@
             </div>
         </div>
     @endif
-<div class="flex flex-col items-center min-h-screen bg-gray-50 py-8">
+<div class="flex flex-col px-4 md:px-0 items-center min-h-screen bg-gray-50 py-8">
     <div class="w-full max-w-4xl flex flex-col gap-8">
         {{-- Advertisement Details --}}
         <div class="bg-white shadow-md rounded-lg p-6">

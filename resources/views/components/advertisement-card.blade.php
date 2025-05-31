@@ -19,6 +19,29 @@
             <span class="text-white bg-red-500 px-2 py-1 rounded-br font-bold">Sold</span>
         @endif
     </div>
+
+    <!-- Add to Wishlist Form -->
+    @auth
+        @php
+            $isWishlisted = isset($wishlistedIds) && in_array($advertisement['id'], $wishlistedIds);
+        @endphp
+
+        <form action="{{ route('wishlist.store') }}" method="POST" class="absolute top-0 right-0 px-3 py-2 text-xl wishlist-form">
+            @csrf
+            <input type="hidden" name="advertisement_id" value="{{ $advertisement['id'] }}">
+            <button type="submit">
+                @if($isWishlisted)
+                    <i class="fa-solid fa-bookmark text-blue-600"></i>
+                @else
+                    <i class="fa-regular fa-bookmark text-white"></i>
+                @endif
+            </button>
+        </form>
+    @else
+        <a href="{{ route('login') }}" class="absolute top-0 right-0 px-3 py-2 text-xl">
+            <i class="fa-regular fa-bookmark text-white"></i>
+        </a>
+    @endauth
     
     <!-- Advertisement Details -->
     <div class="p-4">
@@ -75,4 +98,13 @@
     </div>
 
     
+
+    <div id="wishlist-toast-{{ $advertisement['id'] }}" style="display:none; position:fixed; left:50%; top:36%; transform:translateX(-50%); z-index:9999;"
+         class="bg-white text-green-500 px-2 font-bold py-1 rounded shadow-lg text-center">
+        Added to wishlist!
+        <i class="fa fa-check-circle"></i>
+    </div>
 </div>
+
+
+

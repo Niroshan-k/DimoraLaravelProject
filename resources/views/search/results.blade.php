@@ -1,12 +1,16 @@
-<x-app-layout>
-    <x-slot name="header">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+@vite(['resources/css/home.css'])
+@include('layouts.header')
+<body class="bg-gray-100">
+    <main class="container px-4 md:px-0 mx-auto py-8">
         <h1 class="text-3xl mt-20 font-bold text-gray-800">
             Search Results for <span class="text-blue-600">"{{ $query }}"</span>
-        </h1>
-    </x-slot>
-
-    <div class="mx-auto mt-8 px-40">
-        <div class="grid gap-8 md:grid-cols-4">
+        </h1> 
+        <div class="mt-5 md:mt-20 grid gap-8 md:grid-cols-4">
             @forelse($results as $item)
                 <x-advertisement-card :advertisement="$item" />
             @empty
@@ -15,6 +19,8 @@
                 </div>
             @endforelse
         </div>
-    </div>
-@include('components.footer')
-</x-app-layout>
+    </main>
+
+    @include('components.footer')
+</body>
+</html>

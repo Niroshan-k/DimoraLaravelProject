@@ -16,7 +16,10 @@ class SearchController extends Controller
         $results = \App\Models\Advertisement::where(function($q1) use ($query) {
             $q1->where('title', 'like', "%{$query}%")
                 ->orWhereHas('property', function($q2) use ($query) {
-                    $q2->where('location', 'like', "%{$query}%");
+                    $q2->where('location', 'like', "%{$query}%")
+                        ->orWhereHas('house', function($q3) use ($query) {
+                            $q3->where('house_type', 'like', "%{$query}%");
+                        });
                 });
         })->get();
 

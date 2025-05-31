@@ -1,10 +1,13 @@
 <x-app-layout>
-    <div class="py-12">
+    <div class="px-4 md:px-0 py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-20">
-            <div>
+            <div class="flex gap-4">
                 <a href="{{ route('advertisements.create') }}" class="bg-[#959D90] text-white font-bold py-2 px-4 rounded hover:bg-green-600">
                     Create Advertisement
                 </a>
+                <button onclick="scrollToBlogs()" class="bg-[#523D35] text-white font-bold py-2 px-4 rounded hover:bg-[#886658]">
+                    Blog
+                </button>
             </div>
             <div class="mt-10">
                 <h2 class="text-2xl font-bold mb-4">My Advertisements</h2>
@@ -117,6 +120,44 @@
                     </div>
                 @endif
             </div>
+
+            {{-- Seller's Blogs --}}
+            <div id="blog-section" class="mt-16">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold">My Blogs</h2>
+                    <a href="{{ route('blogs.create') }}" class="bg-[#523D35] text-white font-bold py-2 px-4 rounded hover:bg-[#886658]">
+                        Create Blog
+                    </a>
+                </div>
+                @if($blogs->count())
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        @foreach($blogs as $blog)
+                            <div class="border rounded p-4 shadow bg-white hover:shadow-lg transition">
+                                <h3 class="font-semibold text-lg mb-2">{{ $blog->title }}</h3>
+                                <div class="text-sm text-gray-500 mb-2">
+                                    {{ $blog->created_at?->toFormattedDateString() }}
+                                </div>
+                                @if($blog->images && count($blog->images))
+                                    <img src="{{ asset('storage/' . $blog->images[0]) }}" class="w-full h-32 object-cover rounded mb-2" alt="">
+                                @endif
+                                <p class="text-gray-700 mb-2">{{ Str::limit($blog->content, 120) }}</p>
+                                <div class="flex gap-2 mt-2">
+                                    <a href="{{ route('blogs.edit', $blog->_id) }}" class="bg-[#959D90] text-white px-3 rounded py-1 font-bold">Edit</a>
+                                    <form action="{{ route('blogs.destroy', $blog->_id) }}" method="POST" onsubmit="return confirm('Delete this blog?')" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-500 px-3 py-1 font-bold text-white rounded">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center text-gray-500 py-10">
+                        You haven't written any blogs yet.
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -166,5 +207,12 @@
             });
         });
     });
+
+    function scrollToBlogs() {
+        const blogsSection = document.getElementById('blog-section');
+        if(blogsSection) {
+            blogsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
     </script>
 </x-app-layout>

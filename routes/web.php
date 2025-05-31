@@ -9,6 +9,8 @@ use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\HouseController;
 use App\Http\Controllers\ImageController;
 use App\Models\MongoInfo;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\WishListItemController;
 
 // Test route for property advertisement
 Route::get('test', function () {
@@ -43,9 +45,11 @@ Route::middleware([
         $user = Auth::user();
         $advertisements = $user
             ? $user->advertisements()->with('images')->get()
-            : collect(); // empty collection if not logged in
+            : collect();
 
-        return view('dashboard', compact('advertisements'));
+        $blogs = \App\Models\Blog::where('seller_id', $user->id)->orderBy('created_at', 'desc')->get();
+
+        return view('dashboard', compact('advertisements', 'blogs'));
     })->name('dashboard')->middleware(['auth', RoleMiddleware::class . ':seller']);
     
     Route::get('/create', [AdvertisementController::class, 'create'])
@@ -55,7 +59,17 @@ Route::middleware([
     Route::get('/advertisement/{id}/edit', [AdvertisementController::class, 'edit'])
         ->name('advertisement.edit')
         ->middleware(['auth', RoleMiddleware::class . ':seller']);
+    
+    Route::middleware(['auth', RoleMiddleware::class . ':seller'])->group(function () {
+        Route::get('/blogs/create', [BlogController::class, 'create'])->name('blogs.create');
+        Route::post('/blogs', [BlogController::class, 'store'])->name('blogs.store');
+        Route::get('/blogs/{id}/edit', [BlogController::class, 'edit'])->name('blogs.edit');
+        Route::put('/blogs/{id}', [BlogController::class, 'update'])->name('blogs.update');
+        Route::delete('/blogs/{id}', [BlogController::class, 'destroy'])->name('blogs.destroy');
+    });
 });
+
+Route::get('/wishlist', [WishListItemController::class, 'index'])->middleware('auth')->name('userWishlist.index');
 
 // Public routes
 Route::get('/index', [AdvertisementController::class, 'index'])->name('index');
@@ -65,4 +79,7 @@ Route::resource('advertisements', AdvertisementController::class);
 Route::get('/notifications', [\App\Http\Controllers\AdvertisementController::class, 'notifications'])
     ->middleware(['auth']);
 Route::get('/search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search');
+Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
+
+
 

@@ -36,7 +36,7 @@
                 <label class="block font-semibold mb-1">Price</label>
                 <input type="number" name="price" class="input w-full" value="{{ old('price', $advertisement->property->price) }}">
             </div>
-            <div class="mb-4">
+            <div class="mb-4 hidden">
                 <label class="block font-semibold mb-1">Type</label>
                 <input type="text" name="type" class="input w-full" value="{{ old('type', $advertisement->property->type) }}">
             </div>

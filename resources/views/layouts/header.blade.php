@@ -43,10 +43,8 @@
                 </form>
 
                 <!-- Notification Bell Button -->
-                <a href="{{ url('/notifications') }}" class="relative group mr-2" title="Notifications">
+                <a href="{{ url('/notifications') }}" class="hidden md:flex relative group mr-2" title="Notifications">
                     <i class="fa-regular fa-bell text-2xl text-white group-hover:text-blue-600 transition"></i>
-                    {{-- Optional: Notification Dot --}}
-                    {{-- <span class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500"></span> --}}
                 </a>
 
                 <!-- Authenticated User Dropdown -->
@@ -59,6 +57,12 @@
                     <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
                         <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Profile
+                        </a>
+                        <a href="{{ route('userWishlist.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Wishlist
+                        </a>
+                        <a href="{{ url('/notifications') }}" class="md:hidden block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <p>Notifications</p>
                         </a>
                         @if(Auth::user()->user_role === 'seller')
                             <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">

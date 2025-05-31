@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\AdvertisementResource;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Blog;
 
 class UserController extends Controller
 {
@@ -14,12 +16,17 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = User::with('advertisements.property.house', 'advertisements.images')->findOrFail($id);
+        $user = Auth::user();
 
-        // Get the user's advertisements (with property, house, and images eager loaded)
-        $advertisements = $user->advertisements;
+        // Eager load advertisements with property, house, and images
+        $advertisements = $user
+            ? $user->advertisements()->with('property.house', 'images')->get()
+            : collect();
 
-        return AdvertisementResource::collection($advertisements);
+        // Get blogs for this seller (from MongoDB)
+        $blogs = Blog::where('seller_id', $user->id)->orderBy('created_at', 'desc')->get();
+
+        return view('dashboard', compact('advertisements', 'blogs'));
     }
 
     /**

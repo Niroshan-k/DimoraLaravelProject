@@ -43,8 +43,13 @@ class AdvertisementController extends Controller
                 $query->where('house_type', 'traditional');
             })
             ->paginate(8, ['*'], 'traditional_page');
-        
-        return view('/index', compact('advertisementsLatest', 'advertisementsLuxury', 'advertisementsModern', 'advertisementsTraditional'));
+
+        $wishlistedIds = [];
+        if (Auth::check()) {
+            $wishlistedIds = \App\Models\WishListItem::where('user_id', Auth::id())->pluck('advertisement_id')->toArray();
+        }
+
+        return view('/index', compact('advertisementsLatest', 'advertisementsLuxury', 'advertisementsModern', 'advertisementsTraditional','wishlistedIds'));
         
     }
 
@@ -127,26 +132,27 @@ class AdvertisementController extends Controller
         // Validate the incoming request data
         $validatedData = $request->validate([
             // Advertisement fields
-            'title' => 'nullable|string|max:255', // Optional
-            'seller_id' => 'required|exists:users,id', // Ensure the seller exists
+            'title' => 'nullable|string|max:255',
+            'seller_id' => 'required|exists:users,id',
             'status' => 'required|string',
-            'description' => 'nullable|string', // Optional
+            'description' => 'nullable|string',
 
             // Property fields
-            'location' => 'nullable|string|max:255', // Optional
-            'price' => 'nullable|numeric', // Optional
-            'type' => 'nullable|string', // Optional
+            'location' => 'nullable|string|max:255',
+            'price' => 'nullable|numeric',
+            'type' => 'nullable|string',
 
             // House fields
-            'bedroom' => 'nullable|integer|min:1', // Optional
-            'bathroom' => 'nullable|integer|min:1', // Optional
-            'pool' => 'nullable|boolean', // Optional
-            'area' => 'nullable|numeric', // Optional
-            'parking' => 'nullable|boolean', // Optional
+            'bedroom' => 'nullable|integer|min:1',
+            'bathroom' => 'nullable|integer|min:1',
+            'pool' => 'nullable|boolean',
+            'area' => 'nullable|numeric',
+            'parking' => 'nullable|boolean',
+            'house_type' => 'nullable|string', 
 
             // Images
-            'images' => 'nullable|array|max:4', // Allow up to 4 images
-            'images.*' => 'nullable|file|mimes:jpg,jpeg,png|max:2048', // Each image must be a file of type jpg, jpeg, or png, max size 2MB
+            'images' => 'nullable|array|max:4', 
+            'images.*' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         // Start a database transaction
@@ -184,6 +190,7 @@ class AdvertisementController extends Controller
                         'pool' => $validatedData['pool'] ?? $house->pool,
                         'area' => $validatedData['area'] ?? $house->area,
                         'parking' => $validatedData['parking'] ?? $house->parking,
+                        'house_type' => $validatedData['house_type'] ?? $house->house_type,
                     ]);
                 }
             }
