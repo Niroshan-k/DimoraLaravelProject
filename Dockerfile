@@ -30,6 +30,12 @@ WORKDIR /var/www/html
 
 COPY . .
 
+# Install Node.js (for Vite)
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+RUN npm install && npm run build
+
 RUN composer install --no-dev --optimize-autoloader
 
 EXPOSE 10000
