@@ -12,10 +12,16 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    curl
+    curl \
+    pkg-config \
+    libssl-dev
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Install PHP MongoDB extension
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
 
 # Copy composer from the composer image
 COPY --from=composer /usr/bin/composer /usr/bin/composer
