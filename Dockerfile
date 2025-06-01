@@ -46,12 +46,11 @@ RUN php artisan storage:link || true
 # Set permissions for storage and cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# Clear Laravel config cache
-RUN php artisan config:clear
-RUN php artisan cache:clear
-RUN php artisan view:clear
-RUN php artisan route:clear
-
 EXPOSE 10000
 
-CMD php artisan migrate --force && php artisan serve --host 0.0.0.0 --port 10000
+CMD php artisan config:clear && \
+    php artisan cache:clear && \
+    php artisan view:clear && \
+    php artisan route:clear && \
+    php artisan migrate --force && \
+    php artisan serve --host 0.0.0.0 --port 10000
