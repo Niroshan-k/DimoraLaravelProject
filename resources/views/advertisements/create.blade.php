@@ -307,6 +307,62 @@
     };
     </script>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let mapInitialized = false;
+        function initPropertyMap() {
+            if (mapInitialized) return;
+            mapInitialized = true;
+
+            var defaultLat = 7.8731;
+            var defaultLng = 80.7718;
+
+            var map = L.map('propertyMap').setView([defaultLat, defaultLng], 7);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            var marker;
+
+            map.on('click', function(e) {
+                var latlng = e.latlng;
+                if (marker) {
+                    marker.setLatLng(latlng);
+                } else {
+                    marker = L.marker(latlng).addTo(map);
+                }
+                // Set the input value to "lat,lng"
+                document.getElementById('property_location').value = latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6);
+
+                // Reverse geocode to get address
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latlng.lat}&lon=${latlng.lng}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.display_name) {
+                            document.getElementById('property_location').value = data.display_name;
+                        } else {
+                            document.getElementById('property_location').value = latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6);
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('property_location').value = latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6);
+                    });
+            });
+        }
+
+        // When propertyForm is shown, initialize the map
+        const propertyForm = document.getElementById('propertyForm');
+        const observer = new MutationObserver(function() {
+            if (propertyForm.style.display !== 'none') {
+                setTimeout(initPropertyMap, 100); // Wait for DOM
+            }
+        });
+        observer.observe(propertyForm, { attributes: true, attributeFilter: ['style'] });
+    });
+    </script>
+
     <style>
     .input { display:block; margin-bottom:10px; padding:8px; width:100%; border:1px solid #ccc; border-radius:4px; }
     .btn { background:#959D90; color:white; padding:8px 16px; border:none; border-radius:4px; cursor:pointer; }
