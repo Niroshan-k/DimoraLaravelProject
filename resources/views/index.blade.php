@@ -3,9 +3,10 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ @vite(['resources/css/home.css'])
 </head>
 <main>
-@vite(['resources/css/home.css'])
+
 @include('layouts.header')
 <header id="home">
   <div class="flex bg-[#0000005d] h-screen justify-between p-10">
