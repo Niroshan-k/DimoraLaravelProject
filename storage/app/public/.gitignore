@@ -1,6 +1,0 @@
-*
-!app/
-!app/public/
-!app/public/appImages/
-!app/public/appImages/*
-!.gitignore
