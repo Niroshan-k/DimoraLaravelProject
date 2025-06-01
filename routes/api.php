@@ -11,7 +11,6 @@ use App\Http\Controllers\WishListItemController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ImageController;
 
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('property', PropertyController::class);
     Route::apiResource('house', HouseController::class);

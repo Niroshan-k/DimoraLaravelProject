@@ -109,7 +109,7 @@
     <script>
     // Replace with your actual token, or fetch it dynamically
     const API_TOKEN = "{{ session('api_token') }}";
-
+    //console.log('API Token:', API_TOKEN);
     function setStep(step) {
         for (let i = 1; i <= 4; i++) {
             document.getElementById('step' + i).classList.remove('active');
