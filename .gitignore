@@ -1,8 +1,3 @@
-*
-!public/
-!public/appImages/
-!public/appImages/*
-!.gitignore
 /.phpunit.cache
 /node_modules
 /public/build

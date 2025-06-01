@@ -193,6 +193,7 @@
         let json = await res.json();
         if(json.advertisement_id) {
             adData = json.advertisement;
+            console.log('Advertisement created:', adData); // <-- Add this
             document.getElementById('adForm').style.display = 'none';
             document.getElementById('propertyForm').style.display = 'block';
             document.getElementById('property_advertisement_id').value = json.advertisement_id;
@@ -222,6 +223,7 @@
         let json = await res.json();
         if(json.property_id) {
             propertyData = json.property;
+            console.log('Property created:', propertyData); // <-- Add this
             document.getElementById('propertyForm').style.display = 'none';
             document.getElementById('houseForm').style.display = 'block';
             document.getElementById('house_property_id').value = json.property_id;
@@ -260,6 +262,7 @@
         let json = await res.json();
         if(json.house_id) {
             houseData = json.house;
+            console.log('House created:', houseData); // <-- Add this
             document.getElementById('houseForm').style.display = 'none';
             document.getElementById('imageForm').style.display = 'block';
             setStep(4);
