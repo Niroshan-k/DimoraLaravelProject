@@ -107,9 +107,8 @@
 
     {{-- JS for steps and progress --}}
     <script>
-    // Replace with your actual token, or fetch it dynamically
     const API_TOKEN = "{{ session('api_token') }}";
-    //console.log('API Token:', API_TOKEN);
+
     function setStep(step) {
         for (let i = 1; i <= 4; i++) {
             document.getElementById('step' + i).classList.remove('active');
@@ -120,110 +119,83 @@
 
     let adData = {}, propertyData = {}, houseData = {}, imageData = {};
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Only initialize when propertyForm is visible
-        let mapInitialized = false;
-        function initPropertyMap() {
-            if (mapInitialized) return;
-            mapInitialized = true;
-
-            // Default center (can be changed)
-            var defaultLat = 7.8731;
-            var defaultLng = 80.7718;
-
-            var map = L.map('propertyMap').setView([defaultLat, defaultLng], 7);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
-
-            var marker;
-
-            map.on('click', function(e) {
-                var latlng = e.latlng;
-                if (marker) {
-                    marker.setLatLng(latlng);
-                } else {
-                    marker = L.marker(latlng).addTo(map);
-                }
-                // Set the input value to "lat,lng"
-                document.getElementById('property_location').value = latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6);
-
-                // Reverse geocode to get address
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latlng.lat}&lon=${latlng.lng}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.display_name) {
-                            document.getElementById('property_location').value = data.display_name;
-                        } else {
-                            document.getElementById('property_location').value = latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6);
-                        }
-                    })
-                    .catch(() => {
-                        document.getElementById('property_location').value = latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6);
-                    });
-            });
+    function showError(message) {
+        let err = document.getElementById('formError');
+        if (!err) {
+            err = document.createElement('div');
+            err.id = 'formError';
+            err.style.color = 'red';
+            err.style.marginBottom = '10px';
+            document.querySelector('.max-w-xl').prepend(err);
         }
+        err.textContent = message;
+    }
 
-        // When propertyForm is shown, initialize the map
-        const propertyForm = document.getElementById('propertyForm');
-        const observer = new MutationObserver(function() {
-            if (propertyForm.style.display !== 'none') {
-                setTimeout(initPropertyMap, 100); // Wait for DOM
+    function clearError() {
+        let err = document.getElementById('formError');
+        if (err) err.textContent = '';
+    }
+
+    async function safeFetch(url, options) {
+        try {
+            let res = await fetch(url, options);
+            let text = await res.text();
+            try {
+                let json = JSON.parse(text);
+                if (!res.ok) {
+                    showError(json.message || 'Server error');
+                    console.error('API error:', json);
+                    return null;
+                }
+                return json;
+            } catch (e) {
+                showError('Server returned an unexpected response.');
+                console.error('Non-JSON response:', text);
+                return null;
             }
-        });
-        observer.observe(propertyForm, { attributes: true, attributeFilter: ['style'] });
-    });
+        } catch (err) {
+            showError('Network error: ' + err.message);
+            console.error('Fetch error:', err);
+            return null;
+        }
+    }
 
     document.getElementById('adForm').onsubmit = async function(e) {
         e.preventDefault();
+        clearError();
         setStep(1);
         let form = e.target;
         let data = new FormData(form);
-        let res = await fetch('/api/advertisement', {
+        let json = await safeFetch('/api/advertisement', {
             method: 'POST',
             body: data,
-            headers: {
-                'Authorization': 'Bearer ' + API_TOKEN
-            }
-        }).catch((error) => {
-            console.error('There has been a problem with your fetch operation:', error);
+            headers: { 'Authorization': 'Bearer ' + API_TOKEN }
         });
-        let json = await res.json();
-        if(json.advertisement_id) {
+        if (json && json.advertisement_id) {
             adData = json.advertisement;
-            console.log('Advertisement created:', adData); // <-- Add this
+            console.log('Advertisement created:', adData);
             document.getElementById('adForm').style.display = 'none';
             document.getElementById('propertyForm').style.display = 'block';
             document.getElementById('property_advertisement_id').value = json.advertisement_id;
             document.getElementById('image_advertisement_id').value = json.advertisement_id;
-
-            // Fill and show the summary
-            document.getElementById('adSummaryTitle').textContent = json.advertisement.title;
-            document.getElementById('adSummaryStatus').textContent = json.advertisement.status;
-            document.getElementById('adSummaryDescription').textContent = json.advertisement.description;
-            document.getElementById('adSummary').style.display = 'block';
             setStep(2);
         }
     };
 
     document.getElementById('propertyForm').onsubmit = async function(e) {
         e.preventDefault();
+        clearError();
         setStep(2);
         let form = e.target;
         let data = new FormData(form);
-        let res = await fetch('/api/property', {
+        let json = await safeFetch('/api/property', {
             method: 'POST',
             body: data,
-            headers: {
-                'Authorization': 'Bearer ' + API_TOKEN
-            }
+            headers: { 'Authorization': 'Bearer ' + API_TOKEN }
         });
-        let json = await res.json();
-        if(json.property_id) {
+        if (json && json.property_id) {
             propertyData = json.property;
-            console.log('Property created:', propertyData); // <-- Add this
+            console.log('Property created:', propertyData);
             document.getElementById('propertyForm').style.display = 'none';
             document.getElementById('houseForm').style.display = 'block';
             document.getElementById('house_property_id').value = json.property_id;
@@ -233,6 +205,7 @@
 
     document.getElementById('houseForm').onsubmit = async function(e) {
         e.preventDefault();
+        clearError();
         setStep(3);
         let form = e.target;
 
@@ -249,7 +222,6 @@
             }
         });
 
-        // Print all form data to console before submitting
         let data = new FormData(form);
         let houseInfo = {};
         for (let [key, value] of data.entries()) {
@@ -257,15 +229,12 @@
         }
         console.log('House form data before submit:', houseInfo);
 
-        let res = await fetch('/api/house', {
+        let json = await safeFetch('/api/house', {
             method: 'POST',
             body: data,
-            headers: {
-                'Authorization': 'Bearer ' + API_TOKEN
-            }
+            headers: { 'Authorization': 'Bearer ' + API_TOKEN }
         });
-        let json = await res.json();
-        if(json.house_id) {
+        if (json && json.house_id) {
             houseData = json.house;
             console.log('House created:', houseData);
             document.getElementById('houseForm').style.display = 'none';
@@ -276,18 +245,16 @@
 
     document.getElementById('imageForm').onsubmit = async function(e) {
         e.preventDefault();
+        clearError();
         setStep(4);
         let form = e.target;
         let data = new FormData(form);
-        let res = await fetch('/api/image', {
+        let json = await safeFetch('/api/image', {
             method: 'POST',
             body: data,
-            headers: {
-                'Authorization': 'Bearer ' + API_TOKEN
-            }
+            headers: { 'Authorization': 'Bearer ' + API_TOKEN }
         });
-        let json = await res.json();
-        if(json.images) {
+        if (json && json.images) {
             imageData = json.images;
             document.getElementById('imageForm').style.display = 'none';
             showFinalSummary();
