@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
-    base: 'https://dimoraland.onrender.com/build/',
+    base: '/build/',
     plugins: [
         laravel({
             input: [
