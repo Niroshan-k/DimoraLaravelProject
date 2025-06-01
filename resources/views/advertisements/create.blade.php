@@ -41,7 +41,7 @@
         {{-- Step 3: House --}}
         <form id="houseForm" style="display:none;">
             <h2 class="text-xl font-bold mb-4">Step 3: House Details</h2>
-            <input type="hidden" name="property_id" id="house_property_id">
+            <input type="number" name="property_id" id="house_property_id">
             <input type="number" name="bedroom" class="input" placeholder="Bedrooms" required>
             <input type="number" name="bathroom" class="input" placeholder="Bathrooms" required>
             <input type="number" name="area" class="input" placeholder="Area (sqft)" required>
@@ -239,10 +239,8 @@
         // Ensure unchecked checkboxes are sent as 0
         ['pool', 'parking'].forEach(name => {
             if (!form[name].checked) {
-                // Remove any existing hidden input for this name
                 let existing = form.querySelector(`input[type="hidden"][name="${name}"]`);
                 if (existing) existing.remove();
-                // Add hidden input with value 0
                 let hidden = document.createElement('input');
                 hidden.type = 'hidden';
                 hidden.name = name;
@@ -250,8 +248,15 @@
                 form.appendChild(hidden);
             }
         });
-        
+
+        // Print all form data to console before submitting
         let data = new FormData(form);
+        let houseInfo = {};
+        for (let [key, value] of data.entries()) {
+            houseInfo[key] = value;
+        }
+        console.log('House form data before submit:', houseInfo);
+
         let res = await fetch('/api/house', {
             method: 'POST',
             body: data,
@@ -262,7 +267,7 @@
         let json = await res.json();
         if(json.house_id) {
             houseData = json.house;
-            console.log('House created:', houseData); // <-- Add this
+            console.log('House created:', houseData);
             document.getElementById('houseForm').style.display = 'none';
             document.getElementById('imageForm').style.display = 'block';
             setStep(4);
