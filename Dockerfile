@@ -34,9 +34,17 @@ COPY . .
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
+# Install NPM dependencies and build assets
 RUN npm install && npm run build
 
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
+
+# Create storage symlink for Laravel file uploads
+RUN php artisan storage:link || true
+
+# Set permissions for storage and cache
+RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 10000
 
