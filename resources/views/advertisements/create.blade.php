@@ -43,7 +43,7 @@
         {{-- Step 3: House --}}
         <form id="houseForm" style="display:none;">
             <h2 class="text-xl font-bold mb-4">Step 3: House Details</h2>
-            <input type="number" name="property_id" id="house_property_id">
+            <input type="hidden" name="property_id" id="house_property_id">
             <input type="number" name="bedroom" class="input" placeholder="Bedrooms" required>
             <input type="number" name="bathroom" class="input" placeholder="Bathrooms" required>
             <input type="number" name="area" class="input" placeholder="Area (sqft)" required>
@@ -396,7 +396,8 @@
     const storage = firebase.storage();
 
     async function uploadToFirebase(file) {
-      const storageRef = storage.ref('images/' + file.name);
+      const uniqueSuffix = Date.now() + '-' + Math.floor(Math.random() * 100000);
+      const storageRef = storage.ref('images/' + uniqueSuffix + '-' + file.name);
       await storageRef.put(file);
       const url = await storageRef.getDownloadURL();
       return url;

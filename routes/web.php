@@ -79,7 +79,8 @@ Route::resource('advertisements', AdvertisementController::class);
 Route::get('/notifications', [\App\Http\Controllers\AdvertisementController::class, 'notifications'])
     ->middleware(['auth']);
 Route::get('/search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search');
-Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
-
+Route::middleware(['auth'])->group(function () {
+    Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+});
 
 

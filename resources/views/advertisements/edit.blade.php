@@ -5,7 +5,7 @@
 
 <x-app-layout>
     <div class="max-w-2xl mx-auto py-10">
-        <h2 class="text-2xl font-bold mb-6">Edit Advertisement</h2>
+        <h2 class="text-2xl font-bold mb-6 mt-10">Edit Advertisement</h2>
         <form action="{{ route('advertisements.update', $advertisement->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -142,7 +142,8 @@
      const storage = firebase.storage();
 
      async function uploadToFirebase(file) {
-        const storageRef = storage.ref('images/' + Date.now() + '-' + file.name);
+        const uniqueSuffix = Date.now() + '-' + Math.floor(Math.random() * 100000);
+        const storageRef = storage.ref('images/' + uniqueSuffix + '-' + file.name);
         await storageRef.put(file);
         return await storageRef.getDownloadURL();
      }

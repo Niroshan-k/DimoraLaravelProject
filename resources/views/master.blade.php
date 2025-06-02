@@ -7,7 +7,7 @@
         <div 
             x-data="{
                 active: 0,
-                images: {{ $advertisement->images->pluck('data')->map(fn($d) => asset('storage/'.$d)) }},
+                images: {{ $advertisement->images->pluck('data') }},
                 interval: null,
                 start() {
                     this.interval = setInterval(() => {
@@ -124,7 +124,7 @@
 
                 @if($seller)
                     <div class="flex items-center gap-3 mb-4">
-                        <img src="{{ asset('storage/' . $seller->profile_photo_path) }}" alt="Seller Image" class="w-12 h-12 rounded-full object-cover">
+                        <img class="h-12 w-12 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                         <span class="font-bold text-lg">{{ $seller->name }}</span>
                     </div>
                 @endif

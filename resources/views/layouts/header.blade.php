@@ -13,9 +13,12 @@
 <body>
     <!-- Header -->
     <header class="bg-[#00000088] flex z-10 justify-between shadow-md font-inter p-3 fixed top-0 left-0 right-0">
-        <div>
+        <div class="flex items-center gap-4">
             <a href="{{ route('index') }}">
             <img src="https://firebasestorage.googleapis.com/v0/b/dimora-55e52.firebasestorage.app/o/images%2Flogo.png?alt=media&token=35688547-2999-4cb9-9d0b-ae514c83d6bb" alt="logo" class="w-24">
+            </a>
+            <a href="{{ route('blog.index') }}" class="block px-4 py-2 text-sm text-white hover:text-blue-600 transition">
+                Blog
             </a>
         </div>
 
