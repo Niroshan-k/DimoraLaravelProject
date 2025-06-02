@@ -19,12 +19,12 @@
                                 {{-- Images --}}
                                 @if($ad->images->count())
                                     @if($ad->images->count() === 1)
-                                        <img src="{{ asset('storage/' . $ad->images->first()->data) }}" class="w-full h-40 object-cover rounded mt-2" alt="">
+                                        <img src="{{ $ad->images->first()->data }}" class="w-full h-40 object-cover rounded mt-2" alt="">
                                     @else
                                         <div 
                                             x-data="{
                                                 active: 0,
-                                                images: {{ $ad->images->pluck('data')->map(fn($d) => asset('storage/'.$d)) }},
+                                                images: {{ $ad->images->pluck('data') }},
                                                 interval: null,
                                                 start() {
                                                     this.interval = setInterval(() => {

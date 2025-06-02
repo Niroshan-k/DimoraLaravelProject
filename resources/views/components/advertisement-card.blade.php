@@ -3,7 +3,7 @@
     <!-- Advertisement Image -->
     @if (!empty($advertisement['images']) && count($advertisement['images']) > 0)
         <img 
-            src="{{ asset('storage/' . $advertisement['images'][0]['data']) }}" 
+            src="{{ $advertisement->images->first()->data }}" 
             alt="Advertisement Image" 
             class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
     @else

@@ -1,6 +1,8 @@
 {{-- filepath: resources/views/advertisements/create.blade.php --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <x-app-layout>
     <div class="max-w-xl mx-auto py-10">
 
@@ -247,13 +249,29 @@
         e.preventDefault();
         clearError();
         setStep(4);
-        let form = e.target;
-        let data = new FormData(form);
+
+        const files = e.target.elements['images[]'].files;
+        const urls = [];
+        for (let file of files) {
+            const url = await uploadToFirebase(file);
+            urls.push(url);
+        }
+
+        // Now send URLs to Laravel
+        let data = {
+            advertisement_id: document.getElementById('image_advertisement_id').value,
+            images: urls
+        };
+
         let json = await safeFetch('/api/image', {
             method: 'POST',
-            body: data,
-            headers: { 'Authorization': 'Bearer ' + API_TOKEN }
+            headers: {
+                'Authorization': 'Bearer ' + API_TOKEN,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
+
         if (json && json.images) {
             imageData = json.images;
             document.getElementById('imageForm').style.display = 'none';
@@ -286,7 +304,7 @@
             </ul>
             <h3>Images</h3>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                ${Array.isArray(imageData) ? imageData.map(img => `<img src="/storage/${img.data}" style="width:100px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #ccc;">`).join('') : ''}
+                ${Array.isArray(imageData) ? imageData.map(img => `<img src="${img.data}" style="width:100px;height:100px;object-fit:cover;border-radius:6px;border:1px solid #ccc;">`).join('') : ''}
             </div>
         `;
         document.getElementById('fullAdDetails').innerHTML = html;
@@ -361,6 +379,28 @@
         });
         observer.observe(propertyForm, { attributes: true, attributeFilter: ['style'] });
     });
+    </script>
+
+    <script>
+    // Your Firebase config here
+    const firebaseConfig = {
+        apiKey: "AIzaSyCM-ILTwPwjaE9ccQ3rg9f68S7MlObLRng",
+        authDomain: "dimora-55e52.firebaseapp.com",
+        projectId: "dimora-55e52",
+        storageBucket: "dimora-55e52.firebasestorage.app",
+        messagingSenderId: "1069659225426",
+        appId: "1:1069659225426:web:1ec863f1b33df957210e8b",
+        measurementId: "G-HCBFJRHKY4"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const storage = firebase.storage();
+
+    async function uploadToFirebase(file) {
+      const storageRef = storage.ref('images/' + file.name);
+      await storageRef.put(file);
+      const url = await storageRef.getDownloadURL();
+      return url;
+    }
     </script>
 
     <style>

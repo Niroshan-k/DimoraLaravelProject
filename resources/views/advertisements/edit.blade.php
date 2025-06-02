@@ -1,5 +1,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <x-app-layout>
     <div class="max-w-2xl mx-auto py-10">
@@ -76,7 +78,7 @@
                 <div class="flex gap-2 mt-2 flex-wrap" id="image-preview-list">
                     @foreach($advertisement->images as $img)
                         <div class="relative group" style="display:inline-block;">
-                            <img src="{{ asset('storage/' . $img->data) }}" class="w-20 h-20 object-cover rounded" alt="">
+                            <img src="{{ $img->data }}" class="w-20 h-20 object-cover rounded" alt="">
                             <button type="button"
                                 class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-80 hover:opacity-100 delete-image-btn"
                                 data-image-id="{{ $img->id }}"
@@ -126,6 +128,24 @@
              document.getElementById('image-confirm').style.display = 'block';
          });
      });
+
+     const firebaseConfig = {
+        apiKey: "AIzaSyCM-ILTwPwjaE9ccQ3rg9f68S7MlObLRng",
+        authDomain: "dimora-55e52.firebaseapp.com",
+        projectId: "dimora-55e52",
+        storageBucket: "dimora-55e52.firebasestorage.app", // <-- fix here!
+        messagingSenderId: "1069659225426",
+        appId: "1:1069659225426:web:1ec863f1b33df957210e8b",
+        measurementId: "G-HCBFJRHKY4"
+     };
+     firebase.initializeApp(firebaseConfig);
+     const storage = firebase.storage();
+
+     async function uploadToFirebase(file) {
+        const storageRef = storage.ref('images/' + Date.now() + '-' + file.name);
+        await storageRef.put(file);
+        return await storageRef.getDownloadURL();
+     }
 
      document.getElementById('confirm-yes').onclick = function() {
          const btn = pendingDeleteBtn;
@@ -221,6 +241,35 @@
                          locationInput.value = latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6);
                      });
              });
+         }
+     });
+
+     document.querySelector('form').addEventListener('submit', async function(e) {
+         const fileInput = this.querySelector('input[type="file"][name="images[]"]');
+         if (fileInput && fileInput.files.length > 0) {
+             e.preventDefault();
+
+             // Upload all new files to Firebase
+             let urls = [];
+             for (let file of fileInput.files) {
+                 const url = await uploadToFirebase(file);
+                 urls.push(url);
+             }
+
+             // Create hidden inputs for each Firebase URL
+             for (let url of urls) {
+                 const input = document.createElement('input');
+                 input.type = 'hidden';
+                 input.name = 'firebase_images[]';
+                 input.value = url;
+                 this.appendChild(input);
+             }
+
+             // Remove the file input so it doesn't try to upload to your server
+             fileInput.value = '';
+
+             // Submit the form again (now with Firebase URLs)
+             this.submit();
          }
      });
     </script>

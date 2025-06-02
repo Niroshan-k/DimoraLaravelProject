@@ -18,7 +18,7 @@
                             </button>
                         </div>
                         @if($ad->images && count($ad->images))
-                            <img src="{{ asset('storage/' . ($ad->images[0]->data ?? $ad->images[0])) }}" class="w-full h-32 object-cover rounded mb-2" alt="">
+                            <img src="{{ $ad->images->first()->data }}" class="w-full h-32 object-cover rounded mb-2" alt="">
                         @endif
                         <p class="text-gray-700 mb-2">{{ Str::limit($ad->description, 120) }}</p>
                         <a href="/advertisement/{{ $ad['id'] }}" class="bg-[#523D35] text-white py-2 px-4 rounded hover:bg-[#886658]">View Details</a>

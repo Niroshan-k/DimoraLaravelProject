@@ -195,19 +195,18 @@ class AdvertisementController extends Controller
                 }
             }
 
-            // Step 7: Handle Image Updates
-            if (isset($validatedData['images'])) {
+            // Step 5: Handle Firebase Image URLs
+            if (isset($validatedData['firebase_images'])) {
                 // Count current images
                 $currentCount = $advertisement->images()->count();
                 $maxImages = 4;
                 $canAdd = $maxImages - $currentCount;
 
-                $imagesToAdd = array_slice($validatedData['images'], 0, $canAdd);
+                $imagesToAdd = array_slice($validatedData['firebase_images'], 0, $canAdd);
 
-                foreach ($imagesToAdd as $image) {
-                    $filePath = $image->store('images', 'public');
+                foreach ($imagesToAdd as $url) {
                     Image::create([
-                        'data' => $filePath,
+                        'data' => $url,
                         'advertisement_id' => $advertisement->id,
                     ]);
                 }

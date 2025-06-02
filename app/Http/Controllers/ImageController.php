@@ -24,22 +24,21 @@ class ImageController extends Controller
         $validated = $request->validate([
             'advertisement_id' => 'required|exists:advertisements,id',
             'images' => 'required|array|max:4',
-            'images.*' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'images.*' => 'required|url',
         ]);
 
-        $paths = [];
-        foreach ($validated['images'] as $image) {
-            $filePath = $image->store('images', 'public');
+        $saved = [];
+        foreach ($validated['images'] as $imageUrl) {
             $img = Image::create([
-                'data' => $filePath,
+                'data' => $imageUrl,
                 'advertisement_id' => $validated['advertisement_id'],
             ]);
-            $paths[] = $img;
+            $saved[] = $img;
         }
 
         return response()->json([
-            'message' => 'Images uploaded.',
-            'images' => $paths,
+            'message' => 'Image URLs saved.',
+            'images' => $saved,
         ], 201);
     }
 

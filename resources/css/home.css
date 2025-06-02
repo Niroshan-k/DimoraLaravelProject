@@ -3,7 +3,7 @@
 
 
 #home {
- background-image: url('/storage/app/public/appImages/landing.jpg');
+ background-image: url('https://firebasestorage.googleapis.com/v0/b/dimora-55e52.firebasestorage.app/o/images%2F17_cabo.jpg?alt=media&token=817f084b-3876-4c65-aed9-e64a05c5b166');
  width: 100%;
  height: 100vh;
  background-size: cover;

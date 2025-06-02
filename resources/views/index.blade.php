@@ -22,15 +22,15 @@
     <div class="md:flex mt-[100px] gap-5 justify-end hidden">
       @php
         $homes = [
-          ['image' => '1.jpg', 'type' => 'Luxury House', 'desc' => 'Experience elegance and comfort.'],
-          ['image' => '2.jpg', 'type' => 'Traditional House', 'desc' => 'Classic charm meets cozy living.'],
-          ['image' => '3.jpg', 'type' => 'Modern House', 'desc' => 'Sleek designs for modern life.'],
+          ['image' => 'https://firebasestorage.googleapis.com/v0/b/dimora-55e52.firebasestorage.app/o/images%2F03_cabo.jpg?alt=media&token=def7bc81-0f21-48d2-baf5-b2cd8137ce28', 'type' => 'Luxury House', 'desc' => 'Experience elegance and comfort.'],
+          ['image' => 'https://firebasestorage.googleapis.com/v0/b/dimora-55e52.firebasestorage.app/o/images%2F07_cabo.jpg?alt=media&token=117404fc-4f31-498c-a562-358cd2cbff96', 'type' => 'Traditional House', 'desc' => 'Classic charm meets cozy living.'],
+          ['image' => 'https://firebasestorage.googleapis.com/v0/b/dimora-55e52.firebasestorage.app/o/images%2F18_cabo.jpg?alt=media&token=423c9f86-6838-4d66-8090-69b016057cbc', 'type' => 'Modern House', 'desc' => 'Sleek designs for modern life.'],
         ];
       @endphp
 
       @foreach ($homes as $home)
       <div class="relative w-[300px] h-full group overflow-hidden border-2">
-        <img src="{{ asset('storage/appImages/' . $home['image']) }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 z-0" alt="">
+        <img src="{{ $home['image'] }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 z-0" alt="">
         <!-- Overlay -->
         <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
             <h6 class="text-xl">{{ $home['type'] }}</h6>
