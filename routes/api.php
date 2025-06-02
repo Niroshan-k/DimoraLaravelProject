@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\http\Controllers\HouseController;
+use App\Http\Controllers\HouseController;
 use App\Http\Controllers\PropertyController; 
 use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\NotificationController;
